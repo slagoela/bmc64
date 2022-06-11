@@ -43,6 +43,7 @@ extern "C" {
 #include "third_party/common/circle.h"
 #include "third_party/common/keycodes.h"
 #include "third_party/vice-3.3/src/main.h"
+#include "third_party/vice-3.3/src/machine.h"
 }
 
 class CKernel : public ViceStdioApp {
@@ -144,6 +145,8 @@ private:
   int ReadDebounced(int pinIndex);
   void ScanKeyboard();
   void ReadJoystick(int device, int gpioConfig);
+  
+  void SetupCustomGPIO(); // PImmodore adaptation
   void ReadCustomGPIO();
   void SetupUserport();
   void ReadWriteUserport();

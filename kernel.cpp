@@ -970,6 +970,69 @@ void CKernel::ReadJoystick(int device, int gpioConfig) {
   }
 }
 
+// Configure CustomGPIO with the PImmodore output ports
+void CKernel::SetupCustomGPIO() {
+
+  int outputs_enabled = circle_gpio_outputs_enabled();
+
+  for (int i = 0; i < NUM_GPIO_PINS; i++) {
+    // if GPIO output is enabled Change mode to Output for PImmodore pins
+    if (outputs_enabled) {
+      if (i == GPIO_CONFIG_4_PIMMODORE_PA0_INDEX)
+        continue;
+      if (i == GPIO_CONFIG_4_PIMMODORE_PA1_INDEX)
+        continue;
+      if (i == GPIO_CONFIG_4_PIMMODORE_PA2_INDEX)
+        continue;
+    }
+
+    gpioPins[i]->SetMode(GPIOModeInputPullUp);
+  }
+
+  // Unless enable_gpio_outputs is true, this will have no effect.
+  // will do this only once.
+  if (outputs_enabled) {
+
+    int keyboard_mode = 0;
+
+    switch (machine_class) {
+    case VICE_MACHINE_C64:
+    case VICE_MACHINE_VIC20:
+    case VICE_MACHINE_PLUS4:
+    case VICE_MACHINE_C64DTV:
+    case VICE_MACHINE_C64SC:
+      keyboard_mode = BMC64_PIMMODORE_MODE_C64;
+      break;
+
+    case VICE_MACHINE_C128:
+      keyboard_mode = BMC64_PIMMODORE_MODE_C128;
+      break;
+
+    case VICE_MACHINE_PETCAT:
+      keyboard_mode = BMC64_PIMMODORE_MODE_PETB;
+      break;
+
+    case VICE_MACHINE_PET:
+      keyboard_mode = BMC64_PIMMODORE_MODE_PETG;
+      break;
+
+    default:
+      keyboard_mode = BMC64_PIMMODORE_MODE_PC;
+    }
+
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA0_INDEX]->SetMode(GPIOModeOutput);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA1_INDEX]->SetMode(GPIOModeOutput);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA2_INDEX]->SetMode(GPIOModeOutput);
+
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA0_INDEX]->Write(
+        keyboard_mode & 0b00000001 ? HIGH : LOW);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA1_INDEX]->Write(
+        keyboard_mode & 0b00000010 ? HIGH : LOW);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA2_INDEX]->Write(
+        keyboard_mode & 0b00000100 ? HIGH : LOW);
+  }
+}
+
 void CKernel::ReadCustomGPIO() {
   int i;
   unsigned int bank;
@@ -996,6 +1059,14 @@ void CKernel::ReadCustomGPIO() {
   int port_is_gpio_joy[2] = {0,0};
 
   for (i = 0 ; i < NUM_GPIO_PINS; i++) {
+
+    // Skip PImmodore pins if GPIO output is inabled 
+    if ( circle_gpio_outputs_enabled()) {
+      if (i == GPIO_CONFIG_4_PIMMODORE_PA0_INDEX) continue;
+      if (i == GPIO_CONFIG_4_PIMMODORE_PA1_INDEX) continue;
+      if (i == GPIO_CONFIG_4_PIMMODORE_PA2_INDEX) continue;
+    }
+
     bank = gpio_bindings[i] >> 8;
     func = gpio_bindings[i] & 0xFF;
     if (bank > 0) {
@@ -1114,12 +1185,19 @@ void CKernel::ReadCustomGPIO() {
 void CKernel::SetupUserport() {
   // Unless enable_gpio_outputs is true, this will have no effect. Menu item
   // should reflect this.
+
+  static uint8_t last_ddr = 0 
+  
   if (circle_gpio_outputs_enabled()) {
     uint8_t ddr = circle_get_userport_ddr();
-    for (int i = 0; i < 8; i++) {
-      uint8_t bit_pos = 1<<i;
-      uint8_t ddr_value = ddr & bit_pos;
-      config_3_userportPins[i]->SetMode(ddr_value ? GPIOModeOutput : GPIOModeInputPullUp);
+
+    if (ddr != last_ddr) {
+      last_ddr = ddr; // remember the last ddr value to avoid unneeded GPIO pin mode changes
+      for (int i = 0; i < 8; i++) {
+        uint8_t bit_pos = 1<<i;
+        uint8_t ddr_value = ddr & bit_pos;
+        config_3_userportPins[i]->SetMode(ddr_value ? GPIOModeOutput : GPIOModeInputPullUp);
+      }
     }
   }
 }
@@ -1478,7 +1556,6 @@ void CKernel::circle_reset_gpio(int gpio_config) {
     case GPIO_CONFIG_NAV_JOY:
     case GPIO_CONFIG_KYB_JOY:
     case GPIO_CONFIG_WAVESHARE:
-    case GPIO_CONFIG_CUSTOM:
       // Joystick and keyboard settings require all ports
       // to be inputs
       for (int i = 0; i < NUM_GPIO_PINS; i++) {
@@ -1491,6 +1568,9 @@ void CKernel::circle_reset_gpio(int gpio_config) {
         config_3_joystickPins2[i]->SetMode(GPIOModeInputPullUp);
       }
       SetupUserport();
+      break;
+    case GPIO_CONFIG_CUSTOM:
+      SetupCustomGPIO(); // If outputs enabled, setup GPIO for PIMmodore
       break;
     default:
       // Disabled

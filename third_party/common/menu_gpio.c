@@ -42,6 +42,11 @@ int custom_gpio_pins[NUM_GPIO_PINS] = {
     5, 20, 19, 16, 13, 6, 12, 26, 8, 25, 24,
     18, 23, 27, 17, 22, 4, 7, 21, 2, 3, 9, 10 };
 
+//PImmodore adaptation to use  bit 7 and 8 of User Port (GPIO 20 and GPIO 21)
+#define CUSTOM_GPIO_PIMMODORE_PA0_INDEX 7  // GPIO 26
+#define CUSTOM_GPIO_PIMMODORE_PA1_INDEX 1  // GPIO 20
+#define CUSTOM_GPIO_PIMMODORE_PA2_INDEX 18 // GPIO 21
+
 #define NUM_GPIO_BINDINGS 38
 
 // Button function and bank (if applicable)
@@ -96,7 +101,37 @@ void build_gpio_menu(struct menu_item *root) {
    for (int i=0;i<NUM_GPIO_PINS;i++) {
      item = ui_menu_add_multiple_choice(i, root, "");
      item->num_choices = NUM_GPIO_BINDINGS;
-     sprintf (item->name, "GPIO%02d Binding", custom_gpio_pins[i]);
+
+     // Special treatment for PImmodore pins.
+     // Unless enable_gpio_outputs is true, this will have no effect.
+     if ( circle_gpio_outputs_enabled() ) {
+       int is_gpio_out=0;
+       switch (i) {
+         case CUSTOM_GPIO_PIMMODORE_PA0_INDEX: // GPIO 26 
+            sprintf(item->name, "GPIO%02d UserPort P5 > PImmodore PA0", custom_gpio_pins[i]);
+            is_gpio_out = 1;
+            break;
+         case CUSTOM_GPIO_PIMMODORE_PA1_INDEX: // GPIO 20
+            sprintf(item->name, "GPIO%02d UserPort P6 > PImmodore PA1", custom_gpio_pins[i]);
+            is_gpio_out = 1;
+            break;
+         case CUSTOM_GPIO_PIMMODORE_PA2_INDEX: // GPIO 21
+            sprintf(item->name, "GPIO%02d UserPort P7 > PImmodore PA2", custom_gpio_pins[i]);
+            is_gpio_out = 1;
+            break;
+         default:
+            is_gpio_out = 0;
+       }
+
+       if (is_gpio_out) {
+         item->disabled = 1;
+         item->value = 0;
+         gpio_bindings[i] = 0;
+         continue;
+       }
+     }
+
+     sprintf (item->name, "GPIO%02d Binding", custom_gpio_pins[i]); 
 
      for (int j = 0; j < NUM_GPIO_BINDINGS; j++) {
         // Lower = func, Upper = bank arg

@@ -190,6 +190,19 @@
 #define GPIO_CONFIG_3_USERPORT_PB6_INDEX 1  // GPIO 20
 #define GPIO_CONFIG_3_USERPORT_PB7_INDEX 18 // GPIO 21
 
+// PImmodore adaptation to use  bits 6;7;8 of User Port (GPIO 26, GPIO 20 and GPIO 21) 
+// to represent the corresponding keyboard mode
+#define GPIO_CONFIG_4_PIMMODORE_PA0_INDEX 7  // GPIO 26
+#define GPIO_CONFIG_4_PIMMODORE_PA1_INDEX 1  // GPIO 20
+#define GPIO_CONFIG_4_PIMMODORE_PA2_INDEX 18 // GPIO 21
+
+// PImmodore keyboard modes
+#define BMC64_PIMMODORE_MODE_PC   0
+#define BMC64_PIMMODORE_MODE_C64  1
+#define BMC64_PIMMODORE_MODE_C128 2
+#define BMC64_PIMMODORE_MODE_PETB 3
+#define BMC64_PIMMODORE_MODE_PETG 4
+
 // Used as indices into the userportPins array
 #define USERPORT_PB0 0
 #define USERPORT_PB1 1
