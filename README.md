@@ -634,6 +634,24 @@ When used as inputs, the pins use pull-up resistors (just like the real C64) so 
 
 If the pre-defined GPIO configurations don't suit your needs, you can define your own GPIO mappings if you wish.  Use the 'Configure Custom GPIO' menu option under 'Prefs'.
 
+### Keymmodore / PImmodore Custom configuration
+
+A dedicated GPIO Custom configuration for Keymmodore can be activeted by enabling GPIO Outputs ('enable_gpio_outputs=true' in cmdline.txt). This configuration reserves the 3  *UserPort* MSB (bits 5; 6 and  7) to reflect the kind of machine being emulated. These GPIO Outputs can be read by a modifyed keymmodore firmware to switch the keyboard mode automatically.
+
+The connection between Raspberry PI 3 and Teensy ++2.0 is as Follow:
+
+GPIO   | Port Bit |Teensy ++2
+-------|----------|----------
+GPIO26 | 5        |PB4
+GPIO20 | 6        |PB5      
+GPIO21 | 7        |PB6
+
+
+In **Config 4 : Userport and Joysticks** this connection can be tested with this simple BASIC program 
+ 10 POKE 56579,224
+ 20 POKE 56577, 32 * [key mode]
+
+
 # CPU Temperature
 
 IMPORTANT : BMC64 v1.0.6 through v1.4 were not properly putting the other 3 (unused) cores to a low powered mode and was causing CPU temperatures to rise close to or beyond automatic throttling limits. The CPU temperature on a RPi 3 Model B clocked at @1.2Ghz hit 70 degrees without a heat sync.  V1.5+ should not have this issue.  If you are experiencing heat issues (thermometer icon in top right corner), please update your installation to the latest version.
