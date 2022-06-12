@@ -150,7 +150,7 @@ Here are a couple examples you can add to machines.txt that will work with the V
 
 ** DPI uses almost all the GPIO pins. GPIO configs for things like joysticks/keyboards/buttons are disabled when enable_dpi is present in cmdline.txt
 
-*** Special thanks goes out to github user K-rnivoro (https://github.com/K-rnivoro) for suggesting this feature.
+*** Special thanks goes out to K-rnivoro (https://github.com/K-rnivoro) for suggesting this feature.
 
 # Recovering from a Blank Screen
 
@@ -636,15 +636,15 @@ If the pre-defined GPIO configurations don't suit your needs, you can define you
 
 ### Keymmodore / PImmodore Custom configuration
 
-A dedicated GPIO Custom configuration for Keymmodore can be activeted by enabling GPIO Outputs ('enable_gpio_outputs=true' in cmdline.txt). This configuration reserves the 3  *UserPort* MSB (bits 5; 6 and  7) to reflect the kind of machine being emulated. These GPIO Outputs can be read by a modifyed keymmodore firmware to switch the keyboard mode automatically.
+A dedicated GPIO Custom configuration set to work with K-rnivoro's [Keymmodore](https://www.keymmodore.com/) can be activated by enabling GPIO Outputs ('enable_gpio_outputs=true' in cmdline.txt). This configuration reserves the 3 *UserPort* MSB (bits 5; 6 and  7) to reflect the kind of machine being emulated. These GPIO Outputs can be read by a [modifyed keymmodore firmware](https://github.com/slagoela/Keymmodore-64/tree/Teensy++2.0), running on a **Teensy ++20**, to switch the keyboard mode automatically.
 
 The connection between Raspberry PI 3 and Teensy ++2.0 is as Follow:
 
 GPIO   | Port Bit |Teensy ++2
 -------|----------|----------
-GPIO26 | 5        |PB4
-GPIO20 | 6        |PB5      
-GPIO21 | 7        |PB6
+GPIO26 | 5        |B4
+GPIO20 | 6        |B5      
+GPIO21 | 7        |B6
 
 
 In **Config 4 : Userport and Joysticks** this connection can be tested with this simple BASIC program 
