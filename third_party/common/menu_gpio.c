@@ -108,15 +108,15 @@ void build_gpio_menu(struct menu_item *root) {
        int is_gpio_out=0;
        switch (i) {
          case CUSTOM_GPIO_PIMMODORE_PA0_INDEX: // GPIO 26 
-            sprintf(item->name, "GPIO%02d UserPort P5 > PImmodore PA0", custom_gpio_pins[i]);
+            sprintf(item->name, "GPIO%02d UserPort P5 > PImmodore PB4", custom_gpio_pins[i]);
             is_gpio_out = 1;
             break;
          case CUSTOM_GPIO_PIMMODORE_PA1_INDEX: // GPIO 20
-            sprintf(item->name, "GPIO%02d UserPort P6 > PImmodore PA1", custom_gpio_pins[i]);
+            sprintf(item->name, "GPIO%02d UserPort P6 > PImmodore PB5", custom_gpio_pins[i]);
             is_gpio_out = 1;
             break;
          case CUSTOM_GPIO_PIMMODORE_PA2_INDEX: // GPIO 21
-            sprintf(item->name, "GPIO%02d UserPort P7 > PImmodore PA2", custom_gpio_pins[i]);
+            sprintf(item->name, "GPIO%02d UserPort P7 > PImmodore PB6", custom_gpio_pins[i]);
             is_gpio_out = 1;
             break;
          default:

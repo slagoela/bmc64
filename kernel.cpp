@@ -1186,7 +1186,7 @@ void CKernel::SetupUserport() {
   // Unless enable_gpio_outputs is true, this will have no effect. Menu item
   // should reflect this.
 
-  static uint8_t last_ddr = 0 
+  static uint8_t last_ddr = 0; 
   
   if (circle_gpio_outputs_enabled()) {
     uint8_t ddr = circle_get_userport_ddr();
