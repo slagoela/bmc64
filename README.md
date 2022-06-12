@@ -648,9 +648,11 @@ GPIO21 | 7        |PB6
 
 
 In **Config 4 : Userport and Joysticks** this connection can be tested with this simple BASIC program 
- 10 POKE 56579,224
- 20 POKE 56577, 32 * [key mode]
 
+```
+  10 POKE 56579,224                   (224 = 111000000 binary)
+  20 POKE 56577, 32 * [key mode]      (key mode = 0 - PC; 1 - C64; 2 - C128; 3 and 4 - PET)
+```
 
 # CPU Temperature
 
