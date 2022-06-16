@@ -58,6 +58,8 @@ static void menu_value_changed(struct menu_item *item) {
      case MENU_MODEL_PET_8296:
      case MENU_MODEL_PET_SUPERPET:
         petmodel_set(item->sub_id);
+        // Reset GPIO so if Pimmodore is active, the keyboard mode will be updated accordingly 
+        circle_reset_gpio(emu_get_gpio_config());
         ui_pop_all_and_toggle();
         break;
      default:
