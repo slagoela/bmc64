@@ -970,19 +970,19 @@ void CKernel::ReadJoystick(int device, int gpioConfig) {
   }
 }
 
-// Configure CustomGPIO with the PImmodore output ports
+// Configure CustomGPIO with the Pimmodore output ports
 void CKernel::SetupCustomGPIO() {
 
   int outputs_enabled = circle_gpio_outputs_enabled();
 
   for (int i = 0; i < NUM_GPIO_PINS; i++) {
-    // if GPIO output is enabled Change mode to Output for PImmodore pins
+    // if GPIO output is enabled Change mode to Output for Pimmodore pins
     if (outputs_enabled) {
-      if (i == GPIO_CONFIG_4_PIMMODORE_PA0_INDEX)
+      if (i == GPIO_CONFIG_4_PIMMODORE_P0_INDEX)
         continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_PA1_INDEX)
+      if (i == GPIO_CONFIG_4_PIMMODORE_P1_INDEX)
         continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_PA2_INDEX)
+      if (i == GPIO_CONFIG_4_PIMMODORE_P2_INDEX)
         continue;
     }
 
@@ -1008,28 +1008,24 @@ void CKernel::SetupCustomGPIO() {
       keyboard_mode = BMC64_PIMMODORE_MODE_C128;
       break;
 
-    case VICE_MACHINE_PETCAT:
-      keyboard_mode = BMC64_PIMMODORE_MODE_PETB;
-      break;
-
     case VICE_MACHINE_PET:
-      keyboard_mode = BMC64_PIMMODORE_MODE_PETG;
+      if (machine_get_keyboard_type() == 4) // KBD_TYPE_GRAPHICS_US
+        keyboard_mode = BMC64_PIMMODORE_MODE_PETG;
+      else
+        keyboard_mode = BMC64_PIMMODORE_MODE_PETB;
       break;
 
     default:
       keyboard_mode = BMC64_PIMMODORE_MODE_PC;
     }
 
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA0_INDEX]->SetMode(GPIOModeOutput);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA1_INDEX]->SetMode(GPIOModeOutput);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA2_INDEX]->SetMode(GPIOModeOutput);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_P0_INDEX]->SetMode(GPIOModeOutput);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_P1_INDEX]->SetMode(GPIOModeOutput);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_P2_INDEX]->SetMode(GPIOModeOutput);
 
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA0_INDEX]->Write(
-        keyboard_mode & 0b00000001 ? HIGH : LOW);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA1_INDEX]->Write(
-        keyboard_mode & 0b00000010 ? HIGH : LOW);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_PA2_INDEX]->Write(
-        keyboard_mode & 0b00000100 ? HIGH : LOW);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_P0_INDEX]->Write(keyboard_mode & 0b00000001 ? HIGH : LOW);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_P1_INDEX]->Write(keyboard_mode & 0b00000010 ? HIGH : LOW);
+    gpioPins[GPIO_CONFIG_4_PIMMODORE_P2_INDEX]->Write(keyboard_mode & 0b00000100 ? HIGH : LOW);
   }
 }
 
@@ -1060,11 +1056,11 @@ void CKernel::ReadCustomGPIO() {
 
   for (i = 0 ; i < NUM_GPIO_PINS; i++) {
 
-    // Skip PImmodore pins if GPIO output is inabled 
+    // Skip Pimmodore pins if GPIO output is inabled 
     if ( circle_gpio_outputs_enabled()) {
-      if (i == GPIO_CONFIG_4_PIMMODORE_PA0_INDEX) continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_PA1_INDEX) continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_PA2_INDEX) continue;
+      if (i == GPIO_CONFIG_4_PIMMODORE_P0_INDEX) continue;
+      if (i == GPIO_CONFIG_4_PIMMODORE_P1_INDEX) continue;
+      if (i == GPIO_CONFIG_4_PIMMODORE_P2_INDEX) continue;
     }
 
     bank = gpio_bindings[i] >> 8;
@@ -1570,7 +1566,7 @@ void CKernel::circle_reset_gpio(int gpio_config) {
       SetupUserport();
       break;
     case GPIO_CONFIG_CUSTOM:
-      SetupCustomGPIO(); // If outputs enabled, setup GPIO for PIMmodore
+      SetupCustomGPIO(); // If outputs enabled, setup GPIO for Pimmodore
       break;
     default:
       // Disabled

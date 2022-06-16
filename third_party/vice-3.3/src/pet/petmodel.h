@@ -47,5 +47,7 @@
 
 extern int petmodel_get(void);
 extern void petmodel_set(int model);
+extern int petkeyboard_get(int model);
+
 
 #endif

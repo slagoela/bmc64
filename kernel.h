@@ -146,7 +146,7 @@ private:
   void ScanKeyboard();
   void ReadJoystick(int device, int gpioConfig);
   
-  void SetupCustomGPIO(); // PImmodore adaptation
+  void SetupCustomGPIO(); // Pimmodore adaptation
   void ReadCustomGPIO();
   void SetupUserport();
   void ReadWriteUserport();

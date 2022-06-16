@@ -136,7 +136,7 @@ int machine_get_keyboard_type(void)
 {
     int type;
     if (resources_get_int("KeyboardType", &type) < 0) {
-        return 0;
+        return petkeyboard_get(); // return the default for the model
     }
     return type;
 }

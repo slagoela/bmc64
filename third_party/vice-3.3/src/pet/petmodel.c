@@ -282,3 +282,10 @@ void petmodel_set(int model)
         machine_trigger_reset(MACHINE_RESET_MODE_SOFT);
     }
 }
+
+int petkeyboard_get() {
+  int model = petmodel_get();
+  
+  return (pet_table[model].info.kbd_type)
+
+}

@@ -150,7 +150,7 @@ Here are a couple examples you can add to machines.txt that will work with the V
 
 ** DPI uses almost all the GPIO pins. GPIO configs for things like joysticks/keyboards/buttons are disabled when enable_dpi is present in cmdline.txt
 
-*** Special thanks goes out to K-rnivoro (https://github.com/K-rnivoro) for suggesting this feature.
+*** Special thanks goes out to github user K-rnivoro (https://github.com/K-rnivoro) for suggesting this feature.
 
 # Recovering from a Blank Screen
 
@@ -634,7 +634,7 @@ When used as inputs, the pins use pull-up resistors (just like the real C64) so 
 
 If the pre-defined GPIO configurations don't suit your needs, you can define your own GPIO mappings if you wish.  Use the 'Configure Custom GPIO' menu option under 'Prefs'.
 
-### Keymmodore / PImmodore Custom configuration
+### Pimmodore Custom configuration
 
 A dedicated GPIO Custom configuration set to work with K-rnivoro's [Keymmodore](https://www.keymmodore.com/) can be activated by enabling GPIO Outputs ('enable_gpio_outputs=true' in cmdline.txt). This configuration reserves the 3 *UserPort* MSB (bits 5; 6 and  7) to reflect the kind of machine being emulated. These GPIO Outputs can be read by a [modifyed keymmodore firmware](https://github.com/slagoela/Keymmodore-64/tree/Teensy++2.0), running on a **Teensy ++20**, to switch the keyboard mode automatically.
 
