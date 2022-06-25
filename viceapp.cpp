@@ -287,9 +287,11 @@ void ViceScreenApp::SetupGPIOForInput() {
   gpioPins[NO_FIXED_PURPOSE_2_INDEX] =
       new CGPIOPin(3, GPIOModeInputPullUp, &mGPIOManager);
   gpioPins[NO_FIXED_PURPOSE_3_INDEX] =
-      new CGPIOPin(9, GPIOModeInputPullUp, &mGPIOManager);
+      new CGPIOPin(9, GPIOModeInputPullUp, &mGPIOManager);   // Pimmodore P0 when enable_pimmodore = true
   gpioPins[NO_FIXED_PURPOSE_4_INDEX] =
-      new CGPIOPin(10, GPIOModeInputPullUp, &mGPIOManager);
+      new CGPIOPin(10 , GPIOModeInputPullUp, &mGPIOManager); // Pimmodore P1 when enable_pimmodore = true
+  gpioPins[NO_FIXED_PURPOSE_5_INDEX] =
+      new CGPIOPin(11 , GPIOModeInputPullUp, &mGPIOManager); // Pimmodore P2 when enable_pimmodore = true
 
   // Convenience arrays for joysticks
   config_1_joystickPins1[JOY_UP] = gpioPins[GPIO_CONFIG_1_JOY_1_UP_INDEX];

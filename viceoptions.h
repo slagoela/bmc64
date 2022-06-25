@@ -40,6 +40,8 @@ public:
   bool GetRasterSkip(void) const;
   bool GetRasterSkip2(void) const;
 
+  bool PimmodoreEnabled(void) const;
+  
   static ViceOptions *Get(void);
 
 private:
@@ -71,6 +73,8 @@ private:
   int m_scaling_param_sy[2];
   bool m_raster_skip;
   bool m_raster_skip2; // for VDC
+
+   bool m_bPimmodoreEnabled; // Integration with Pimmodore
 
   static ViceOptions *s_pThis;
 };

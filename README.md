@@ -634,25 +634,17 @@ When used as inputs, the pins use pull-up resistors (just like the real C64) so 
 
 If the pre-defined GPIO configurations don't suit your needs, you can define your own GPIO mappings if you wish.  Use the 'Configure Custom GPIO' menu option under 'Prefs'.
 
-### Pimmodore Custom configuration
+## Enabling integration with Keymmodore/Pimmodore
 
-A dedicated GPIO Custom configuration set to work with K-rnivoro's [Keymmodore](https://www.keymmodore.com/) can be activated by enabling GPIO Outputs ('enable_gpio_outputs=true' in cmdline.txt). This configuration reserves the 3 *UserPort* MSB (bits 5; 6 and  7) to reflect the kind of machine being emulated. These GPIO Outputs can be read by a [modifyed keymmodore firmware](https://github.com/slagoela/Keymmodore-64/tree/Teensy++2.0), running on a **Teensy ++20**, to switch the keyboard mode automatically.
+Integration with K-rnivoro's [Keymmodore](https://www.keymmodore.com/) can be enabled by adding '*enable_pimmodore=true*' to cmdline.txt. This configuration Used the Raspberry PI SPI0 GPIO Pins (GPIO 9; 10; 11) as output pins to reflect the kind of machine being emulated. These GPIO Outputs can be read by a [modifyed keymmodore firmware](https://github.com/slagoela/Keymmodore-64/tree/Teensy++2.0), running on a **Teensy ++20**, to switch the keyboard mode automatically.
 
 The connection between Raspberry PI 3 and Teensy ++2.0 is as Follow:
 
-GPIO   | Port Bit |Teensy ++2
--------|----------|----------
-GPIO26 | 5        |B4
-GPIO20 | 6        |B5      
-GPIO21 | 7        |B6
-
-
-In **Config 4 : Userport and Joysticks** this connection can be tested with this simple BASIC program 
-
-```
-  10 POKE 56579,224                   (224 = 111000000 binary)
-  20 POKE 56577, 32 * [key mode]      (key mode = 0 - PC; 1 - C64; 2 - C128; 3 and 4 - PET)
-```
+GPIO   |Function     | Teensy ++2
+-------|-------------|--------
+GPIO09 |PIMMODORE_P0 | B4
+GPIO10 |PIMMODORE_P1 | B5
+GPIO11 |PIMMODORE_P2 | B6
 
 # CPU Temperature
 

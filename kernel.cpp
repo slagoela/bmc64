@@ -260,6 +260,10 @@ int circle_gpio_outputs_enabled() {
   return static_kernel->circle_gpio_outputs_enabled();
 }
 
+int circle_pimmodore_enabled() {
+  return static_kernel->circle_pimmodore_enabled();
+}
+
 void circle_kernel_core_init_complete(int core) {
   static_kernel->circle_kernel_core_init_complete(core);
 }
@@ -970,63 +974,42 @@ void CKernel::ReadJoystick(int device, int gpioConfig) {
   }
 }
 
-// Configure CustomGPIO with the Pimmodore output ports
-void CKernel::SetupCustomGPIO() {
+// Configure and set Pimmodore GPIO Pins with the keyboard mode for the current machine
+void CKernel::SetupPimmodoreGPIO() {
+  int keyboard_mode = 0;
 
-  int outputs_enabled = circle_gpio_outputs_enabled();
+  switch (machine_class) {
+  case VICE_MACHINE_C64:
+  case VICE_MACHINE_VIC20:
+  case VICE_MACHINE_PLUS4:
+  case VICE_MACHINE_C64DTV:
+  case VICE_MACHINE_C64SC:
+    keyboard_mode = BMC64_PIMMODORE_MODE_C64;
+    break;
 
-  for (int i = 0; i < NUM_GPIO_PINS; i++) {
-    // if GPIO output is enabled Change mode to Output for Pimmodore pins
-    if (outputs_enabled) {
-      if (i == GPIO_CONFIG_4_PIMMODORE_P0_INDEX)
-        continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_P1_INDEX)
-        continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_P2_INDEX)
-        continue;
-    }
+  case VICE_MACHINE_C128:
+    keyboard_mode = BMC64_PIMMODORE_MODE_C128;
+    break;
 
-    gpioPins[i]->SetMode(GPIOModeInputPullUp);
+  case VICE_MACHINE_PET:
+    if (machine_get_keyboard_type() == 4) // KBD_TYPE_GRAPHICS_US
+      keyboard_mode = BMC64_PIMMODORE_MODE_PETG;
+    else
+      keyboard_mode = BMC64_PIMMODORE_MODE_PETB;
+    break;
+
+  default:
+    keyboard_mode = BMC64_PIMMODORE_MODE_PC;
   }
 
-  // Unless enable_gpio_outputs is true, this will have no effect.
-  // will do this only once.
-  if (outputs_enabled) {
+  gpioPins[GPIO_PIMMODORE_P0_INDEX]->SetMode(GPIOModeOutput);
+  gpioPins[GPIO_PIMMODORE_P1_INDEX]->SetMode(GPIOModeOutput);
+  gpioPins[GPIO_PIMMODORE_P2_INDEX]->SetMode(GPIOModeOutput);
 
-    int keyboard_mode = 0;
-
-    switch (machine_class) {
-    case VICE_MACHINE_C64:
-    case VICE_MACHINE_VIC20:
-    case VICE_MACHINE_PLUS4:
-    case VICE_MACHINE_C64DTV:
-    case VICE_MACHINE_C64SC:
-      keyboard_mode = BMC64_PIMMODORE_MODE_C64;
-      break;
-
-    case VICE_MACHINE_C128:
-      keyboard_mode = BMC64_PIMMODORE_MODE_C128;
-      break;
-
-    case VICE_MACHINE_PET:
-      if (machine_get_keyboard_type() == 4) // KBD_TYPE_GRAPHICS_US
-        keyboard_mode = BMC64_PIMMODORE_MODE_PETG;
-      else
-        keyboard_mode = BMC64_PIMMODORE_MODE_PETB;
-      break;
-
-    default:
-      keyboard_mode = BMC64_PIMMODORE_MODE_PC;
-    }
-
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_P0_INDEX]->SetMode(GPIOModeOutput);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_P1_INDEX]->SetMode(GPIOModeOutput);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_P2_INDEX]->SetMode(GPIOModeOutput);
-
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_P0_INDEX]->Write(keyboard_mode & 0b00000001 ? HIGH : LOW);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_P1_INDEX]->Write(keyboard_mode & 0b00000010 ? HIGH : LOW);
-    gpioPins[GPIO_CONFIG_4_PIMMODORE_P2_INDEX]->Write(keyboard_mode & 0b00000100 ? HIGH : LOW);
-  }
+  gpioPins[GPIO_PIMMODORE_P0_INDEX]->Write(keyboard_mode & 0b00000001 ? HIGH : LOW);
+  gpioPins[GPIO_PIMMODORE_P1_INDEX]->Write(keyboard_mode & 0b00000010 ? HIGH : LOW);
+  gpioPins[GPIO_PIMMODORE_P2_INDEX]->Write(keyboard_mode & 0b00000100 ? HIGH : LOW);
+  
 }
 
 void CKernel::ReadCustomGPIO() {
@@ -1054,14 +1037,12 @@ void CKernel::ReadCustomGPIO() {
   int ui_activated = emu_is_ui_activated();
   int port_is_gpio_joy[2] = {0,0};
 
+  int pimmodore_enabled = circle_pimmodore_enabled();
+
   for (i = 0 ; i < NUM_GPIO_PINS; i++) {
 
-    // Skip Pimmodore pins if GPIO output is inabled 
-    if ( circle_gpio_outputs_enabled()) {
-      if (i == GPIO_CONFIG_4_PIMMODORE_P0_INDEX) continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_P1_INDEX) continue;
-      if (i == GPIO_CONFIG_4_PIMMODORE_P2_INDEX) continue;
-    }
+    // Skip Pimmodore pins if Pimmodore integration is inabled 
+    if ( pimmodore_enabled && i >= GPIO_PIMMODORE_P0_INDEX) continue;
 
     bank = gpio_bindings[i] >> 8;
     func = gpio_bindings[i] & 0xFF;
@@ -1548,13 +1529,20 @@ void CKernel::circle_check_gpio() {
 // Reset the state of the GPIO pins.
 // Needed when switching to and from GPIO_CONFIG_USERPORT
 void CKernel::circle_reset_gpio(int gpio_config) {
+
+  int pimmodore_enabled = circle_pimmodore_enabled();
+  
   switch (gpio_config) {
     case GPIO_CONFIG_NAV_JOY:
     case GPIO_CONFIG_KYB_JOY:
     case GPIO_CONFIG_WAVESHARE:
+    case GPIO_CONFIG_CUSTOM:
       // Joystick and keyboard settings require all ports
       // to be inputs
       for (int i = 0; i < NUM_GPIO_PINS; i++) {
+        // Leave Pimmodore pins out of this        
+        if (pimmodore_enabled && i >= GPIO_PIMMODORE_P0_INDEX) continue;
+
         gpioPins[i]->SetMode(GPIOModeInputPullUp);
       }
       break;
@@ -1565,13 +1553,13 @@ void CKernel::circle_reset_gpio(int gpio_config) {
       }
       SetupUserport();
       break;
-    case GPIO_CONFIG_CUSTOM:
-      SetupCustomGPIO(); // If outputs enabled, setup GPIO for Pimmodore
-      break;
     default:
       // Disabled
       break;
   }
+
+  if ( pimmodore_enabled )  SetupPimmodoreGPIO(); // setup GPIO for Pimmodore
+
 }
 
 void CKernel::circle_lock_acquire() { m_Lock.Acquire(); }
@@ -1711,6 +1699,10 @@ int CKernel::circle_gpio_enabled() {
 
 int CKernel::circle_gpio_outputs_enabled() {
   return !mViceOptions.DPIEnabled() && mViceOptions.GPIOOutputsEnabled();
+}
+
+int CKernel::circle_pimmodore_enabled() {
+  return !mViceOptions.DPIEnabled() && mViceOptions.PimmodoreEnabled();
 }
 
 // Called by cores 1 and 2 after they are done initializing

@@ -38,7 +38,7 @@ ViceOptions::ViceOptions(void)
       m_audioOut(VCHIQSoundDestinationAuto), m_bDPIEnabled(false),
       m_scaling_param_fbw{0,0}, m_scaling_param_fbh{0,0},
       m_scaling_param_sx{0,0}, m_scaling_param_sy{0,0},
-      m_raster_skip(false), m_raster_skip2(false) {
+      m_raster_skip(false), m_raster_skip2(false), m_bPimmodoreEnabled(false) {
   s_pThis = this;
 
   CBcmPropertyTags Tags;
@@ -153,6 +153,13 @@ ViceOptions::ViceOptions(void)
       } else {
         m_raster_skip2 = false;
       }
+    } else if (strcmp(pOption, "enable_pimmodore") == 0) {
+      // Unless this is true, OUTPUT HIGH should not be allowed on any pin.
+      if (strcmp(pValue,"true") == 0 || strcmp(pValue, "1") == 0) {
+        m_bPimmodoreEnabled = true;
+      } else {
+        m_bPimmodoreEnabled = false;
+      }
     }
   }
 
@@ -220,6 +227,8 @@ unsigned long ViceOptions::GetCyclesPerSecond(void) const {
 TVCHIQSoundDestination ViceOptions::GetAudioOut(void) const {
   return m_audioOut;
 }
+
+bool ViceOptions::PimmodoreEnabled(void) const { return m_bPimmodoreEnabled; }
 
 ViceOptions *ViceOptions::Get(void) { return s_pThis; }
 

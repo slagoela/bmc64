@@ -122,10 +122,27 @@
 #define GPIO_JS1_SELECT_INDEX             17 // GPIO 7
 #define GPIO_JS2_SELECT_INDEX             18 // GPIO 21
 
+// Pimmodore Integration:
+// No fixed purpose pins actually have a specific purpose when integration with Pimmodore (pimmodore_enabled) is true
+// - GPIO 11 is added to this group (NO_FIXED_PURPOSE_5_INDEX)
+// - The SPI0 Pins (GPIO 9; 10; 11) will actully be used as simple output pins to control the keymmodore/pimmodore keyboard mode
 #define NO_FIXED_PURPOSE_1_INDEX          19 // GPIO 2
-#define NO_FIXED_PURPOSE_2_INDEX          20 // GPIO 3
+#define NO_FIXED_PURPOSE_2_INDEX          20 // GPIO 3  (Also in use by Raspbian for wake up)
 #define NO_FIXED_PURPOSE_3_INDEX          21 // GPIO 9
 #define NO_FIXED_PURPOSE_4_INDEX          22 // GPIO 10
+#define NO_FIXED_PURPOSE_5_INDEX          23 // GPIO 11 (New)
+
+// Use the Raspbery PI SPI0 pins to control Keymmodore/PImmodore keyboard mode
+#define GPIO_PIMMODORE_P0_INDEX 21  // GPIO 09
+#define GPIO_PIMMODORE_P1_INDEX 22  // GPIO 10
+#define GPIO_PIMMODORE_P2_INDEX 23  // GPIO 11
+
+// Pimmodore keyboard modes
+#define BMC64_PIMMODORE_MODE_PC   0
+#define BMC64_PIMMODORE_MODE_C64  1
+#define BMC64_PIMMODORE_MODE_C128 2
+#define BMC64_PIMMODORE_MODE_PETB 3
+#define BMC64_PIMMODORE_MODE_PETG 4
 
 // Used as indices into the joystickPins arrays
 #define JOY_UP    0
@@ -189,19 +206,6 @@
 #define GPIO_CONFIG_3_USERPORT_PB5_INDEX 7  // GPIO 26
 #define GPIO_CONFIG_3_USERPORT_PB6_INDEX 1  // GPIO 20
 #define GPIO_CONFIG_3_USERPORT_PB7_INDEX 18 // GPIO 21
-
-// Pimmodore adaptation to use  bits 5;6;7 of User Port (GPIO 26, GPIO 20 and GPIO 21) 
-// to represent the corresponding Keymmodore/PImmodore keyboard mode
-#define GPIO_CONFIG_4_PIMMODORE_P0_INDEX 7  // GPIO 26
-#define GPIO_CONFIG_4_PIMMODORE_P1_INDEX 1  // GPIO 20
-#define GPIO_CONFIG_4_PIMMODORE_P2_INDEX 18 // GPIO 21
-
-// Pimmodore keyboard modes
-#define BMC64_PIMMODORE_MODE_PC   0
-#define BMC64_PIMMODORE_MODE_C64  1
-#define BMC64_PIMMODORE_MODE_C128 2
-#define BMC64_PIMMODORE_MODE_PETB 3
-#define BMC64_PIMMODORE_MODE_PETG 4
 
 // Used as indices into the userportPins array
 #define USERPORT_PB0 0
