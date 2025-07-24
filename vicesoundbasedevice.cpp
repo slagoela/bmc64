@@ -410,8 +410,8 @@ void ViceSoundBaseDevice::Callback(const VCHI_CALLBACK_REASON_T Reason,
     }
     assert(m_State >= VCHIQSoundRunning);
 
-    if (Msg.u.complete.cookie1 != VC_AUDIO_WRITE_COOKIE1 ||
-        Msg.u.complete.cookie2 != VC_AUDIO_WRITE_COOKIE2) {
+    if (Msg.u.complete.cookie1 != (uint32_t) VC_AUDIO_WRITE_COOKIE1 ||
+        Msg.u.complete.cookie2 != (uint32_t) VC_AUDIO_WRITE_COOKIE2) {
       m_State = VCHIQSoundError;
 
       assert(0);

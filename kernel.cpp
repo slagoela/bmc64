@@ -978,6 +978,10 @@ void CKernel::ReadJoystick(int device, int gpioConfig) {
 void CKernel::SetupPimmodoreGPIO() {
   int keyboard_mode = 0;
 
+#if defined(RASPI_PLUS4EMU)
+  keyboard_mode = BMC64_PIMMODORE_MODE_C64;
+  return
+#else
   switch (machine_class) {
   case VICE_MACHINE_C64:
   case VICE_MACHINE_VIC20:
@@ -1001,6 +1005,7 @@ void CKernel::SetupPimmodoreGPIO() {
   default:
     keyboard_mode = BMC64_PIMMODORE_MODE_PC;
   }
+#endif
 
   gpioPins[GPIO_PIMMODORE_P0_INDEX]->SetMode(GPIOModeOutput);
   gpioPins[GPIO_PIMMODORE_P1_INDEX]->SetMode(GPIOModeOutput);
@@ -1009,7 +1014,7 @@ void CKernel::SetupPimmodoreGPIO() {
   gpioPins[GPIO_PIMMODORE_P0_INDEX]->Write(keyboard_mode & 0b00000001 ? HIGH : LOW);
   gpioPins[GPIO_PIMMODORE_P1_INDEX]->Write(keyboard_mode & 0b00000010 ? HIGH : LOW);
   gpioPins[GPIO_PIMMODORE_P2_INDEX]->Write(keyboard_mode & 0b00000100 ? HIGH : LOW);
-  
+
 }
 
 void CKernel::ReadCustomGPIO() {
@@ -1041,7 +1046,7 @@ void CKernel::ReadCustomGPIO() {
 
   for (i = 0 ; i < NUM_GPIO_PINS; i++) {
 
-    // Skip Pimmodore pins if Pimmodore integration is inabled 
+    // Skip Pimmodore pins if Pimmodore integration is inabled
     if ( pimmodore_enabled && i >= GPIO_PIMMODORE_P0_INDEX) continue;
 
     bank = gpio_bindings[i] >> 8;
@@ -1163,8 +1168,8 @@ void CKernel::SetupUserport() {
   // Unless enable_gpio_outputs is true, this will have no effect. Menu item
   // should reflect this.
 
-  static uint8_t last_ddr = 0; 
-  
+  static uint8_t last_ddr = 0;
+
   if (circle_gpio_outputs_enabled()) {
     uint8_t ddr = circle_get_userport_ddr();
 
@@ -1531,7 +1536,7 @@ void CKernel::circle_check_gpio() {
 void CKernel::circle_reset_gpio(int gpio_config) {
 
   int pimmodore_enabled = circle_pimmodore_enabled();
-  
+
   switch (gpio_config) {
     case GPIO_CONFIG_NAV_JOY:
     case GPIO_CONFIG_KYB_JOY:
@@ -1540,7 +1545,7 @@ void CKernel::circle_reset_gpio(int gpio_config) {
       // Joystick and keyboard settings require all ports
       // to be inputs
       for (int i = 0; i < NUM_GPIO_PINS; i++) {
-        // Leave Pimmodore pins out of this        
+        // Leave Pimmodore pins out of this
         if (pimmodore_enabled && i >= GPIO_PIMMODORE_P0_INDEX) continue;
 
         gpioPins[i]->SetMode(GPIOModeInputPullUp);
