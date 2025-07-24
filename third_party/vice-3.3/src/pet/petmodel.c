@@ -283,9 +283,9 @@ void petmodel_set(int model)
     }
 }
 
-int petkeyboard_get() {
+int petkeyboard_get(void) {
   int model = petmodel_get();
-  
-  return (pet_table[model].info.kbd_type)
+
+  return (pet_table[model].info.kbd_type);
 
 }

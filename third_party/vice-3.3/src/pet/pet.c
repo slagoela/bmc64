@@ -76,6 +76,7 @@
 #include "petcolour.h"
 #include "petiec.h"
 #include "petmem.h"
+#include "petmodel.h"
 #include "petreu.h"
 #include "petdww.h"
 #include "pethre.h"
