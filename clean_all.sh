@@ -11,6 +11,7 @@ fi
 SRC_DIR=`pwd`
 
 cd $SRC_DIR/third_party/vice-3.3
+./autogen.sh
 make clean
 git status | grep 'deleted:.*doc' | sed 's/deleted:/git checkout /' | sh
 
